@@ -1,6 +1,6 @@
 import hikari
 from decouple import config
-from birthday_logic import sort_birthdays_by_closest
+from birthday_logic import formatted_birthday_information
 
 bot = hikari.GatewayBot(config("BOT_TOKEN"))
 
@@ -10,7 +10,7 @@ async def test(event: hikari.MessageCreateEvent) -> None:
     if event.is_bot or not event.content:
         return
 
-    if event.content.startswith("b!birthdays"):
-        await event.message.respond(sort_birthdays_by_closest())
+    if event.content.startswith("bb!birthdays"):
+        await event.message.respond(formatted_birthday_information())
 
 bot.run()
