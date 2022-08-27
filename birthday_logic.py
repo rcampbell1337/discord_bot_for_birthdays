@@ -23,26 +23,29 @@ def sort_birthdays_by_closest():
         name: {
                "birthday": f"{'/'.join(birthday_list[name].split('/')[:2])}/"
                            f"{determine_if_birthday_is_this_year_or_the_next(get_date_diff(birthday_list[name]))}",
-               "time_till_birthday": get_date_diff(birthday_list[name]),
+               "days_away": get_date_diff(birthday_list[name]),
                "expected_age": get_age_on_birthday(birthday_list[name])
                }
         for name in birthday_list.keys()}
-    return OrderedDict(sorted(full_birthday_data.items(), key=lambda item: getitem(item[1], 'time_till_birthday')))
+    return OrderedDict(sorted(full_birthday_data.items(), key=lambda item: getitem(item[1], 'days_away')))
 
 
-def determine_if_birthday_is_this_year_or_the_next(time_till_birthday):
+def determine_if_birthday_is_this_year_or_the_next(days_away):
     today = datetime.now()
     return today.year \
-        if time_till_birthday < ((date(today.year + 1, 1, 1)) - date(today.year, today.month, today.day)).days \
+        if days_away < ((date(today.year + 1, 1, 1)) - date(today.year, today.month, today.day)).days \
         else today.year + 1
 
 
 def formatted_birthday_information():
-    sorted_birthdays = sort_birthdays_by_closest()
-    return "\n".join(f"{name} will be "
-                     f"{sorted_birthdays[name]['expected_age']} on their birthday "
-                     f"{sorted_birthdays[name]['birthday']}. this is "
-                     f"{sorted_birthdays[name]['time_till_birthday']} days away."
-                     for name in sorted_birthdays
-                     if sorted_birthdays[name]['time_till_birthday'])
+    birthdays = sort_birthdays_by_closest()
+    birthdays_coming_up = "\n".join(f"{name} will be "
+                                    f"{birthdays[name]['expected_age']} on their birthday "
+                                    f"{birthdays[name]['birthday']}. This is "
+                                    f"{birthdays[name]['days_away']} days away."
+                                    for name in birthdays
+                                    if birthdays[name]['days_away'] <= 60)
+    other_birthdays = f"{', '.join(name for name in list(birthdays.keys())[:-1] if birthdays[name]['days_away'] > 60)}"\
+                      f" and {list(birthdays.keys())[-1]}'s birthdays are still over 60 days away."
+    return f"{birthdays_coming_up}\n{other_birthdays}"
 
