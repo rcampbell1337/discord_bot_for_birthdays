@@ -24,7 +24,7 @@ async def get_birthday_by_name(event: hikari.MessageCreateEvent) -> None:
     if event.content.startswith("cake!get"):
         await event.message.respond(
             birthday_coll.get_birthday_by_name(
-                event.channel_id,
+                str(event.message.guild_id),
                 " ".join(event.content.split()[1:])
             )
         )
@@ -32,12 +32,22 @@ async def get_birthday_by_name(event: hikari.MessageCreateEvent) -> None:
     if event.content.startswith("cake!all"):
         await event.message.respond(
             birthday_coll.get_all_birthdays(
-                event.channel_id)
+                str(event.message.guild_id)
+            )
         )
 
     if event.content.startswith("cake!new"):
         await event.message.respond(
             birthday_coll.insert_new_birthday(
+                str(event.message.guild_id),
+                event.content.split()[1],
+                event.content.split()[2]
+            )
+        )
+
+    if event.content.startswith("cake!update"):
+        await event.message.respond(
+            birthday_coll.update_existing_birthday(
                 str(event.message.guild_id),
                 event.content.split()[1],
                 event.content.split()[2]
