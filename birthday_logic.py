@@ -50,7 +50,7 @@ class Birthday:
             if days_away < ((date(today.year + 1, 1, 1)) - date(today.year, today.month, today.day)).days \
             else today.year + 1
 
-    def sort_birthdays_by_closest(self):
+    def sort_birthdays_by_closest(self) -> OrderedDict:
         """
         Sorts the birthdays by whose how far away it is in days.
         :return: A sorted birthday list by how far away it is in days.
@@ -65,7 +65,7 @@ class Birthday:
             for birthday in self.birthday_list}
         return OrderedDict(sorted(full_birthday_data.items(), key=lambda item: getitem(item[1], 'days_away')))
 
-    def formatted_birthday_information(self):
+    def formatted_birthday_information(self) -> str:
         """
         Returns the sorted birthday list in a human readable format.
         :return: The sorted birthday list in a human readable format.
