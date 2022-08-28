@@ -1,6 +1,6 @@
 import hikari
 from decouple import config
-from birthday_logic import formatted_birthday_information
+from birthday_logic import Birthday
 from mongodb import BirthdayCollection
 
 bot = hikari.GatewayBot(config("BOT_TOKEN"))
@@ -12,7 +12,7 @@ async def get_birthdays(event: hikari.MessageCreateEvent) -> None:
         return
 
     if event.content.startswith("cake!birthdays"):
-        await event.message.respond(formatted_birthday_information())
+        await event.message.respond(Birthday(str(event.message.guild_id)).formatted_birthday_information())
 
 
 @bot.listen()

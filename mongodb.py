@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 from decouple import config
 from datetime import datetime
-import re
 
 
 class BirthdayCollection:
@@ -90,4 +89,4 @@ class BirthdayCollection:
             else f"Hmmm... Couldn't find a birthday for {queried_name} :("
 
     def get_all_birthdays(self, server):
-        return [birthdays for birthdays in self.collection.find({"serverid": server})["birthdays"]]
+        return [birthdays for birthdays in self.collection.find_one({"serverid": server})["birthdays"]]
