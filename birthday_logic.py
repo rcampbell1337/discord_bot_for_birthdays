@@ -9,7 +9,12 @@ class Birthday:
         self.birthday_list = BirthdayCollection().get_all_birthdays(server)
 
     @staticmethod
-    def get_date_diff(birthday: str):
+    def get_date_diff(birthday: str) -> int:
+        """
+        Gets the number of days between now and someones birthday.
+        :param birthday:v
+        :return: The number of days between two dates.
+        """
         split_year_from_birthday = "/".join(birthday.split("/")[:2])
         upcoming_date = datetime.strptime(split_year_from_birthday, "%d/%m")
         current_date = datetime.strptime(f"{datetime.now().day}/{datetime.now().month}", "%d/%m")
@@ -17,19 +22,39 @@ class Birthday:
         return number_of_days if number_of_days > 0 else 365 + number_of_days
 
     @staticmethod
-    def get_age_on_birthday(birthday: str):
+    def get_age_on_birthday(birthday: str) -> int:
+        """
+        Gets how old a person will be on their birthday.
+        :param birthday: The persons birthday.
+        :return: The persons age on their birthday.
+        """
         birth_year = birthday.split("/")[2]
         current_year = datetime.now().year
         return current_year - int(birth_year)
 
     @staticmethod
-    def determine_if_birthday_is_this_year_or_the_next(days_away):
+    def determine_if_birthday_is_this_year_or_the_next(days_away: int) -> int:
+        """
+        Determines if the year to be shown against when their birthday is should be this year or the next.
+        :param days_away: Number of days till the persons birthday.
+        :return: The persons birthday year.
+        Example:
+        _______
+        If someone will be 23 on the first of Jan next year, as it is written without this method it will return:
+        01/01/current_year.
+        Parsed with method:
+        01/01/next_year
+        """
         today = datetime.now()
         return today.year \
             if days_away < ((date(today.year + 1, 1, 1)) - date(today.year, today.month, today.day)).days \
             else today.year + 1
 
     def sort_birthdays_by_closest(self):
+        """
+        Sorts the birthdays by whose how far away it is in days.
+        :return: A sorted birthday list by how far away it is in days.
+        """
         full_birthday_data = {
             birthday["name"]: {
                    "birthday": f"{'/'.join(birthday['birthday'].split('/')[:2])}/"
@@ -41,6 +66,10 @@ class Birthday:
         return OrderedDict(sorted(full_birthday_data.items(), key=lambda item: getitem(item[1], 'days_away')))
 
     def formatted_birthday_information(self):
+        """
+        Returns the sorted birthday list in a human readable format.
+        :return: The sorted birthday list in a human readable format.
+        """
         birthdays = self.sort_birthdays_by_closest()
         later_birthdays = [name for name in list(birthdays.keys())[:-1] if birthdays[name]['days_away'] > 60]
         birthdays_coming_up = "\n".join(f"{name} will be "
