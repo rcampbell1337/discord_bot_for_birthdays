@@ -134,3 +134,6 @@ class BirthdayCollection:
         :return: A list of all birthdays for a given server.
         """
         return [birthdays for birthdays in self.collection.find_one({"serverid": server})["birthdays"]]
+
+    def get_all_servers(self):
+        return self.collection.find()
