@@ -20,6 +20,9 @@ sched.start()
 
 @sched.scheduled_job(CronTrigger(day="*/1"))
 async def check_for_birthday_in_specified_weeks() -> None:
+    """
+    Checks if any birthdays are coming up, once a day specified by number of days.
+    """
     servers = BirthdayCollection().get_all_servers()
     for server in servers:
         birthday_triggers = Birthday(server).get_any_close_birthdays([7, 14, 28])
@@ -36,11 +39,12 @@ async def check_for_birthday_in_specified_weeks() -> None:
                                                                  f"\n{birthday_warning}\nDon't forget!")
 
 
-bot.add_plugin(daily_plugin)
-
-
 @bot.listen()
 async def get_birthdays(event: hikari.MessageCreateEvent) -> None:
+    """
+    Gets the status of all birthdays in a given server.
+    :param event: A message is sent to the server.
+    """
     if event.is_bot or not event.content:
         return
 
@@ -49,7 +53,11 @@ async def get_birthdays(event: hikari.MessageCreateEvent) -> None:
 
 
 @bot.listen()
-async def get_birthday_by_name(event: hikari.MessageCreateEvent) -> None:
+async def data_manipulation_methods(event: hikari.MessageCreateEvent) -> None:
+    """
+    Handles all data manipulation message events.
+    :param event: A message is sent in a server.
+    """
     birthday_coll = BirthdayCollection()
     if event.is_bot or not event.content:
         return
@@ -87,4 +95,5 @@ async def get_birthday_by_name(event: hikari.MessageCreateEvent) -> None:
             )
         )
 
+bot.add_plugin(daily_plugin)
 bot.run()

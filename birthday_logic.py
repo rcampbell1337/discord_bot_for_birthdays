@@ -10,12 +10,13 @@ from operator import getitem
 
 @dataclass
 class BirthdayPerson:
-    """ Class for storing birthday information """
+    """ Class for storing birthday information. """
     name: str
     weeks_till_day: int
 
 
 class Birthday:
+    """ Class representing all birthday logic. """
     def __init__(self, server):
         self.birthday_list = BirthdayCollection().get_all_birthdays(server["serverid"])
 
@@ -95,6 +96,11 @@ class Birthday:
                f"{other_birthdays if len(later_birthdays) else ''}"
 
     def get_any_close_birthdays(self, distance_to_check: List[int]) -> List[BirthdayPerson]:
+        """
+        Lists all birthdays which are close to the current date.
+        :param distance_to_check: A list of days to check.
+        :return: All birthdays which are close to the current date.
+        """
         return [
             BirthdayPerson(
                 name=birthday["name"],
