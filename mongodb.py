@@ -135,5 +135,5 @@ class BirthdayCollection:
         """
         return [birthdays for birthdays in self.collection.find_one({"serverid": server})["birthdays"]]
 
-    def get_all_servers(self):
+    def get_all_servers(self):        
         return self.collection.find()

@@ -1,12 +1,23 @@
+import math
+from dataclasses import dataclass
 from datetime import datetime, date
+from typing import List
+
 from mongodb import BirthdayCollection
 from collections import OrderedDict
 from operator import getitem
 
 
+@dataclass
+class BirthdayPerson:
+    """ Class for storing birthday information """
+    name: str
+    weeks_till_day: int
+
+
 class Birthday:
     def __init__(self, server):
-        self.birthday_list = BirthdayCollection().get_all_birthdays(server)
+        self.birthday_list = BirthdayCollection().get_all_birthdays(server["serverid"])
 
     @staticmethod
     def get_date_diff(birthday: str) -> int:
@@ -82,4 +93,13 @@ class Birthday:
                           f" and {list(birthdays.keys())[-1]}'s birthdays are still over 60 days away."
         return f"{birthdays_coming_up}\n" \
                f"{other_birthdays if len(later_birthdays) else ''}"
+
+    def get_any_close_birthdays(self, distance_to_check: List[int]) -> List[BirthdayPerson]:
+        return [
+            BirthdayPerson(
+                name=birthday["name"],
+                weeks_till_day=math.floor(self.get_date_diff(birthday["birthday"]) / 7)
+            )
+            for birthday in self.birthday_list
+            if self.get_date_diff(birthday["birthday"]) in distance_to_check]
 

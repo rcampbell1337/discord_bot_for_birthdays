@@ -1,6 +1,5 @@
 import lightbulb
 import hikari
-import discord
 from decouple import config
 from birthday_logic import Birthday
 from mongodb import BirthdayCollection
@@ -19,14 +18,22 @@ sched = AsyncIOScheduler()
 sched.start()
 
 
-@sched.scheduled_job(CronTrigger(second="*/15"))
+@sched.scheduled_job(CronTrigger(day="*/1"))
 async def check_for_birthday_in_specified_weeks() -> None:
     servers = BirthdayCollection().get_all_servers()
     for server in servers:
+        birthday_triggers = Birthday(server).get_any_close_birthdays([7, 14, 28])
+        birthday_warning = "\n".join(f"{birthday.name} in {birthday.weeks_till_day} weeks from today"
+                                     for birthday in birthday_triggers)
         channels = await daily_plugin.app.rest.fetch_guild_channels(server["serverid"])
-
         valid_channels = [channel for channel in channels if isinstance(channel, hikari.GuildTextChannel)]
-        await bot.rest.create_message(valid_channels[0], "hello world")
+        if len(birthday_triggers):
+            try:
+                await bot.rest.create_message(valid_channels[0], f"The following birthdays are coming up!:"
+                                                                 f"\n{birthday_warning}\nDon't forget!")
+            except hikari.errors.ForbiddenError:
+                await bot.rest.create_message(valid_channels[1], f"The following birthdays are coming up!:"
+                                                                 f"\n{birthday_warning}\nDon't forget!")
 
 
 bot.add_plugin(daily_plugin)
