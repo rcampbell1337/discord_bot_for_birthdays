@@ -21,22 +21,52 @@ sched.start()
 @sched.scheduled_job(CronTrigger(day="*/1"))
 async def check_for_birthday_in_specified_weeks() -> None:
     """
-    Checks if any birthdays are coming up, once a day specified by number of days.
+    Checks if any birthdays are coming up or are today, once a day specified by number of days.
     """
     servers = BirthdayCollection().get_all_servers()
     for server in servers:
-        birthday_triggers = Birthday(server).get_any_close_birthdays([7, 14, 28])
-        birthday_warning = "\n".join(f"{birthday.name} in {birthday.weeks_till_day} weeks from today"
-                                     for birthday in birthday_triggers)
+        birthdays_for_server = Birthday(server)
+
+        # Gets a list of the close birthdays
+        birthday_triggers = birthdays_for_server.get_any_close_birthdays([7, 14, 28])
+
+        # Gets actual birthdays
+        birthdays_today = birthdays_for_server.get_any_close_birthdays([0])
+
         channels = await daily_plugin.app.rest.fetch_guild_channels(server["serverid"])
         valid_channels = [channel for channel in channels if isinstance(channel, hikari.GuildTextChannel)]
+
+        # Handle Birthday events
+        if len(birthday_todays):
+            birthday_message = "\n".join(f"{birthday.name} HAPPY BIRTHDAY!!!"
+                                         for birthday in birthday_todays)
+
+            await try_to_send_to_channel(valid_channels, f"OMG IT'S BIRTHDAY TIME!!!:"
+                                                         f"\n{birthday_message}\nCONGRATULATIONS! :cupcake:")
+
+        # Handle upcoming birthday events.
         if len(birthday_triggers):
-            try:
-                await bot.rest.create_message(valid_channels[0], f"The following birthdays are coming up!:"
-                                                                 f"\n{birthday_warning}\nDon't forget!")
-            except hikari.errors.ForbiddenError:
-                await bot.rest.create_message(valid_channels[1], f"The following birthdays are coming up!:"
-                                                                 f"\n{birthday_warning}\nDon't forget!")
+            birthday_warning = "\n".join(f"{birthday.name} in {birthday.weeks_till_day} weeks from today"
+                                         for birthday in birthday_triggers)
+
+            await try_to_send_to_channel(valid_channels, f"The following birthdays are coming up!:"
+                                                         f"\n{birthday_warning}\nDon't forget! :anger:")
+
+
+async def try_to_send_to_channel(channels: list, message: str, channel_index=0):
+    """
+    An recursive helper method that will only send a message to a channel which the bot has permissions to see.
+    :param channels: A list of valid channels.
+    :param message: The message to be sent.
+    :param channel_index: The channel to try to send a message too.
+    :return: If no channels can be found.
+    """
+    try:
+        await bot.rest.create_message(channels[channel_index], message)
+    except hikari.errors.ForbiddenError:
+        await try_to_send_to_channel(channels, message, channel_index + 1)
+    except IndexError:
+        return
 
 
 @bot.listen()

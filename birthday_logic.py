@@ -30,8 +30,10 @@ class Birthday:
         split_year_from_birthday = "/".join(birthday.split("/")[:2])
         upcoming_date = datetime.strptime(split_year_from_birthday, "%d/%m")
         current_date = datetime.strptime(f"{datetime.now().day}/{datetime.now().month}", "%d/%m")
+        if current_date == upcoming_date:
+            return 0
         number_of_days = int(str(upcoming_date - current_date).split(" ")[0])
-        return number_of_days if number_of_days > 0 else 365 + number_of_days
+        return number_of_days if number_of_days >= 0 else 365 + number_of_days
 
     @staticmethod
     def get_age_on_birthday(birthday: str) -> int:
@@ -104,7 +106,8 @@ class Birthday:
         return [
             BirthdayPerson(
                 name=birthday["name"],
-                weeks_till_day=math.floor(self.get_date_diff(birthday["birthday"]) / 7)
+                weeks_till_day=math.floor(self.get_date_diff(birthday["birthday"]) / 7
+                                          if self.get_date_diff(birthday["birthday"]) != 0 else 0)
             )
             for birthday in self.birthday_list
             if self.get_date_diff(birthday["birthday"]) in distance_to_check]
