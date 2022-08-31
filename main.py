@@ -18,7 +18,7 @@ sched = AsyncIOScheduler()
 sched.start()
 
 
-@sched.scheduled_job(CronTrigger(day="*/1"))
+@sched.scheduled_job(CronTrigger(day="*", hour="10", minute="30"))
 async def check_for_birthday_in_specified_weeks() -> None:
     """
     Checks if any birthdays are coming up or are today, once a day specified by number of days.
@@ -37,9 +37,9 @@ async def check_for_birthday_in_specified_weeks() -> None:
         valid_channels = [channel for channel in channels if isinstance(channel, hikari.GuildTextChannel)]
 
         # Handle Birthday events
-        if len(birthday_todays):
+        if len(birthdays_today):
             birthday_message = "\n".join(f"{birthday.name} HAPPY BIRTHDAY!!!"
-                                         for birthday in birthday_todays)
+                                         for birthday in birthdays_today)
 
             await try_to_send_to_channel(valid_channels, f"OMG IT'S BIRTHDAY TIME!!!:"
                                                          f"\n{birthday_message}\nCONGRATULATIONS! :cupcake:")
