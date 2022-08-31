@@ -8,7 +8,6 @@ from apscheduler.triggers.cron import CronTrigger
 
 bot = lightbulb.BotApp(
     token=config("BOT_TOKEN"),
-    prefix="cake!",
     intents=hikari.Intents.ALL_MESSAGES,
     ignore_bots=True,
 )
@@ -78,7 +77,7 @@ async def get_birthdays(event: hikari.MessageCreateEvent) -> None:
     if event.is_bot or not event.content:
         return
 
-    if event.content.startswith("birthdays"):
+    if event.content.startswith("cake!birthdays"):
         await event.message.respond(Birthday(str(event.message.guild_id)).formatted_birthday_information())
 
 
@@ -92,7 +91,7 @@ async def data_manipulation_methods(event: hikari.MessageCreateEvent) -> None:
     if event.is_bot or not event.content:
         return
 
-    if event.content.startswith("get"):
+    if event.content.startswith("cake!get"):
         await event.message.respond(
             birthday_coll.get_birthday_by_name(
                 str(event.message.guild_id),
@@ -100,14 +99,14 @@ async def data_manipulation_methods(event: hikari.MessageCreateEvent) -> None:
             )
         )
 
-    if event.content.startswith("all"):
+    if event.content.startswith("cake!all"):
         await event.message.respond(
             birthday_coll.get_all_birthdays(
                 str(event.message.guild_id)
             )
         )
 
-    if event.content.startswith("new"):
+    if event.content.startswith("cake!new"):
         await event.message.respond(
             birthday_coll.insert_new_birthday(
                 str(event.message.guild_id),
@@ -116,7 +115,7 @@ async def data_manipulation_methods(event: hikari.MessageCreateEvent) -> None:
             )
         )
 
-    if event.content.startswith("update"):
+    if event.content.startswith("cake!update"):
         await event.message.respond(
             birthday_coll.update_existing_birthday(
                 str(event.message.guild_id),
