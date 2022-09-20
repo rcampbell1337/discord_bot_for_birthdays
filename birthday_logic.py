@@ -24,7 +24,7 @@ class Birthday:
     def get_date_diff(birthday: str) -> int:
         """
         Gets the number of days between now and someones birthday.
-        :param birthday:v
+        :param: The persons birthday.
         :return: The number of days between two dates.
         """
         split_year_from_birthday = "/".join(birthday.split("/")[:2])

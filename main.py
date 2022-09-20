@@ -45,7 +45,7 @@ async def check_for_birthday_in_specified_weeks() -> None:
 
         # Handle upcoming birthday events.
         if len(birthday_triggers):
-            birthday_warning = "\n".join(f"{birthday.name} in {birthday.weeks_till_day} weeks from today"
+            birthday_warning = "\n".join(f"{birthday.name} in {birthday.weeks_till_day} week{'s' if birthday.weeks_till_day != 1 else ''} from today"
                                          for birthday in birthday_triggers)
 
             await try_to_send_to_channel(valid_channels, f"The following birthdays are coming up!:"
