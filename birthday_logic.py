@@ -2,6 +2,7 @@ import math
 from dataclasses import dataclass
 from datetime import datetime, date
 from typing import List
+from helpers import get_date_diff
 from mongodb import BirthdayCollection
 from collections import OrderedDict
 from operator import getitem
@@ -18,21 +19,6 @@ class Birthday:
     """ Class representing all birthday logic. """
     def __init__(self, server):
         self.birthday_list = BirthdayCollection().get_all_birthdays(server["serverid"])
-
-    @staticmethod
-    def get_date_diff(birthday: str) -> int:
-        """
-        Gets the number of days between now and someones birthday.
-        :param: The persons birthday.
-        :return: The number of days between two dates.
-        """
-        split_year_from_birthday = "/".join(birthday.split("/")[:2])
-        upcoming_date = datetime.strptime(split_year_from_birthday, "%d/%m")
-        current_date = datetime.strptime(f"{datetime.now().day}/{datetime.now().month}", "%d/%m")
-        if current_date == upcoming_date:
-            return 0
-        number_of_days = int(str(upcoming_date - current_date).split(" ")[0])
-        return number_of_days if number_of_days >= 0 else 365 + number_of_days
 
     @staticmethod
     def get_age_on_birthday(birthday: str) -> int:
@@ -71,8 +57,8 @@ class Birthday:
         full_birthday_data = {
             birthday["name"]: {
                    "birthday": f"{'/'.join(birthday['birthday'].split('/')[:2])}/"
-                               f"{self.determine_if_birthday_is_this_year_or_the_next(self.get_date_diff(birthday['birthday']))}",
-                   "days_away": self.get_date_diff(birthday['birthday']),
+                               f"{self.determine_if_birthday_is_this_year_or_the_next(get_date_diff(birthday['birthday']))}",
+                   "days_away": get_date_diff(birthday['birthday']),
                    "expected_age": self.get_age_on_birthday(birthday['birthday'])
                    }
             for birthday in self.birthday_list}
@@ -105,9 +91,9 @@ class Birthday:
         return [
             BirthdayPerson(
                 name=birthday["name"],
-                weeks_till_day=math.floor(self.get_date_diff(birthday["birthday"]) / 7
-                                          if self.get_date_diff(birthday["birthday"]) != 0 else 0)
+                weeks_till_day=math.floor(get_date_diff(birthday["birthday"]) / 7
+                                          if get_date_diff(birthday["birthday"]) != 0 else 0)
             )
             for birthday in self.birthday_list
-            if self.get_date_diff(birthday["birthday"]) in distance_to_check]
+            if get_date_diff(birthday["birthday"]) in distance_to_check]
 

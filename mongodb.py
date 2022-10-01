@@ -2,7 +2,8 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 from decouple import config
 from datetime import datetime
-
+from helpers import get_date_diff
+from youtube import get_first_yt_video
 
 class BirthdayCollection:
     """
@@ -71,7 +72,7 @@ class BirthdayCollection:
             "birthday": date
         }}})
 
-        return f"Successfully inserted {name}'s birthday as {date}" \
+        return f"Successfully inserted {name}'s birthday as {date}{self.birthday_is_today_message(name, date)}" \
             if is_inserted.acknowledged \
             else f"Could not save a birthday for {name}"
 
@@ -104,7 +105,7 @@ class BirthdayCollection:
                 })
                 is_updated = self.collection.update_one({"_id": server.get("_id")}, {"$set": {"birthdays": birthdays}})
 
-                return f"Successfully updated {name}'s birthday to {date}" \
+                return f"Successfully updated {name}'s birthday to {date}{self.birthday_is_today_message(name, date)}" \
                     if is_updated.acknowledged \
                     else f"Could not save a birthday for {name}"
 
@@ -136,3 +137,13 @@ class BirthdayCollection:
 
     def get_all_servers(self):        
         return self.collection.find()
+
+    def birthday_is_today_message(self, name: str, date: str) -> str:
+        """
+        Gets if someones birthday is today.
+        :param name: The name of the person.
+        :param date: The date of the birthday.
+        """
+        return f"... Wait a minute, it's {name}'s birthday today!!!\n{name.upper()} HAPPY BIRTHDAY!!!\n{get_first_yt_video(name)}" \
+                    if not get_date_diff(date) \
+                    else ""
