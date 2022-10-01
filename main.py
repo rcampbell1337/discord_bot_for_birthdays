@@ -46,7 +46,7 @@ async def check_for_birthday_in_specified_weeks() -> None:
 
         # Handle upcoming birthday events.
         if len(birthday_triggers):
-            birthday_warning = "\n".join(f"{birthday.name} in {birthday.weeks_till_day} "
+            birthday_warning = "\n".join(f"{birthday.name.upper()} in {birthday.weeks_till_day} "
                                          f"week{'s' if birthday.weeks_till_day != 1 else ''} from today"
                                          for birthday in birthday_triggers)
 
