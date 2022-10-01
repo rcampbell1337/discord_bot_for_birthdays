@@ -5,6 +5,7 @@ from birthday_logic import Birthday
 from mongodb import BirthdayCollection
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+from youtube import get_first_yt_video
 
 bot = lightbulb.BotApp(
     token=config("BOT_TOKEN"),
@@ -37,11 +38,11 @@ async def check_for_birthday_in_specified_weeks() -> None:
 
         # Handle Birthday events
         if len(birthdays_today):
-            birthday_message = "\n".join(f"{birthday.name} HAPPY BIRTHDAY!!!"
+            birthday_message = "\n".join(f"{birthday.name} HAPPY BIRTHDAY!!!\n{get_first_yt_video(birthday.name)}"
                                          for birthday in birthdays_today)
 
             await try_to_send_to_channel(valid_channels, f"OMG IT'S BIRTHDAY TIME!!!:"
-                                                         f"\n{birthday_message}\nCONGRATULATIONS! :cupcake:")
+                                                         f"\n{birthday_message}\n:cupcake:")
 
         # Handle upcoming birthday events.
         if len(birthday_triggers):

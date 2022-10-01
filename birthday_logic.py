@@ -2,7 +2,6 @@ import math
 from dataclasses import dataclass
 from datetime import datetime, date
 from typing import List
-
 from mongodb import BirthdayCollection
 from collections import OrderedDict
 from operator import getitem

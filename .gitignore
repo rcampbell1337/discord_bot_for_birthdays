@@ -1,3 +1,4 @@
 .env
 birthday_secrets.py
 .idea/
+venv
